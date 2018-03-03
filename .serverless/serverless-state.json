@@ -1,0 +1,669 @@
+{
+  "service": {
+    "service": "forex-jlgarcia",
+    "serviceObject": {
+      "name": "forex-jlgarcia"
+    },
+    "provider": {
+      "stage": "dev",
+      "region": "ap-southeast-1",
+      "variableSyntax": "\\${([ ~:a-zA-Z0-9._'\",\\-\\/\\(\\)]+?)}",
+      "name": "aws",
+      "runtime": "nodejs4.3",
+      "environment": {
+        "CLIENT_ID": "305703264613.325045768983",
+        "CLIENT_SECRET": "f612a23844672392b8178136d01c743d",
+        "VERIFICATION_TOKEN": "pVsLKxAecCvXdDPKDXxiyUng",
+        "INSTALL_ERROR_URL": "http://forex-jlgarciamidterms.s3-website-ap-southeast-1.amazonaws.com/#error",
+        "INSTALL_SUCCESS_URL": "http://forex-jlgarciamidterms.s3-website-ap-southeast-1.amazonaws.com/#success",
+        "NAMESPACE": "forex-jlgarcia-dev",
+        "TEAMS_TABLE": "forex-jlgarcia-dev-teams"
+      },
+      "iamRoleStatements": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "dynamodb:GetItem",
+            "dynamodb:PutItem"
+          ],
+          "Resource": [
+            "arn:aws:dynamodb:*:*:table/forex-jlgarcia-dev-teams"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "lambda:invokeFunction"
+          ],
+          "Resource": [
+            "arn:aws:lambda:*:*:function:forex-jlgarcia-dev-actions"
+          ]
+        }
+      ],
+      "versionFunctions": true,
+      "remoteFunctionData": null,
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "AccelerateConfiguration": {
+                "AccelerationStatus": "Suspended"
+              }
+            }
+          },
+          "ActionsLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/forex-jlgarcia-dev-actions"
+            }
+          },
+          "EventsLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/forex-jlgarcia-dev-events"
+            }
+          },
+          "InstallLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/forex-jlgarcia-dev-install"
+            }
+          },
+          "IamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "dev",
+                        "forex-jlgarcia",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/forex-jlgarcia-dev-actions:*"
+                          },
+                          {
+                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/forex-jlgarcia-dev-events:*"
+                          },
+                          {
+                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/forex-jlgarcia-dev-install:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/forex-jlgarcia-dev-actions:*:*"
+                          },
+                          {
+                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/forex-jlgarcia-dev-events:*:*"
+                          },
+                          {
+                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/forex-jlgarcia-dev-install:*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][0]"
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][1]"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "forex-jlgarcia",
+                    "dev",
+                    "ap-southeast-1",
+                    "lambdaRole"
+                  ]
+                ]
+              }
+            }
+          },
+          "ActionsLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/forex-jlgarcia/dev/1520041159633-2018-03-03T01:39:19.633Z/forex-jlgarcia.zip"
+              },
+              "FunctionName": "forex-jlgarcia-dev-actions",
+              "Handler": "actions.handler",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs4.3",
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "CLIENT_ID": "305703264613.325045768983",
+                  "CLIENT_SECRET": "f612a23844672392b8178136d01c743d",
+                  "VERIFICATION_TOKEN": "pVsLKxAecCvXdDPKDXxiyUng",
+                  "INSTALL_ERROR_URL": "http://forex-jlgarciamidterms.s3-website-ap-southeast-1.amazonaws.com/#error",
+                  "INSTALL_SUCCESS_URL": "http://forex-jlgarciamidterms.s3-website-ap-southeast-1.amazonaws.com/#success",
+                  "NAMESPACE": "forex-jlgarcia-dev",
+                  "TEAMS_TABLE": "forex-jlgarcia-dev-teams"
+                }
+              }
+            },
+            "DependsOn": [
+              "ActionsLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "ActionsLambdaVersionbDl3Rca3ttFBiCeX5R5F5AIzc4fYofkRXQ73bITEQs": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "ActionsLambdaFunction"
+              },
+              "CodeSha256": "tdmyJJRfnBgRKg5ywiE53s+iflGaigoceJzdi8CdSno="
+            }
+          },
+          "EventsLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/forex-jlgarcia/dev/1520041159633-2018-03-03T01:39:19.633Z/forex-jlgarcia.zip"
+              },
+              "FunctionName": "forex-jlgarcia-dev-events",
+              "Handler": "events.handler",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs4.3",
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "CLIENT_ID": "305703264613.325045768983",
+                  "CLIENT_SECRET": "f612a23844672392b8178136d01c743d",
+                  "VERIFICATION_TOKEN": "pVsLKxAecCvXdDPKDXxiyUng",
+                  "INSTALL_ERROR_URL": "http://forex-jlgarciamidterms.s3-website-ap-southeast-1.amazonaws.com/#error",
+                  "INSTALL_SUCCESS_URL": "http://forex-jlgarciamidterms.s3-website-ap-southeast-1.amazonaws.com/#success",
+                  "NAMESPACE": "forex-jlgarcia-dev",
+                  "TEAMS_TABLE": "forex-jlgarcia-dev-teams"
+                }
+              }
+            },
+            "DependsOn": [
+              "EventsLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "EventsLambdaVersionOcg0oFiz8Y2XnMItrnGxKq0YjBQXp56MLfjDONpM": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "EventsLambdaFunction"
+              },
+              "CodeSha256": "tdmyJJRfnBgRKg5ywiE53s+iflGaigoceJzdi8CdSno="
+            }
+          },
+          "InstallLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/forex-jlgarcia/dev/1520041159633-2018-03-03T01:39:19.633Z/forex-jlgarcia.zip"
+              },
+              "FunctionName": "forex-jlgarcia-dev-install",
+              "Handler": "install.handler",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs4.3",
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "CLIENT_ID": "305703264613.325045768983",
+                  "CLIENT_SECRET": "f612a23844672392b8178136d01c743d",
+                  "VERIFICATION_TOKEN": "pVsLKxAecCvXdDPKDXxiyUng",
+                  "INSTALL_ERROR_URL": "http://forex-jlgarciamidterms.s3-website-ap-southeast-1.amazonaws.com/#error",
+                  "INSTALL_SUCCESS_URL": "http://forex-jlgarciamidterms.s3-website-ap-southeast-1.amazonaws.com/#success",
+                  "NAMESPACE": "forex-jlgarcia-dev",
+                  "TEAMS_TABLE": "forex-jlgarcia-dev-teams"
+                }
+              }
+            },
+            "DependsOn": [
+              "InstallLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "InstallLambdaVersionwMIW0BPofVnyjAeNKW60u8TdGWNJiCPR8v0tTfgnHc": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "InstallLambdaFunction"
+              },
+              "CodeSha256": "tdmyJJRfnBgRKg5ywiE53s+iflGaigoceJzdi8CdSno="
+            }
+          },
+          "ApiGatewayRestApi": {
+            "Type": "AWS::ApiGateway::RestApi",
+            "Properties": {
+              "Name": "dev-forex-jlgarcia",
+              "EndpointConfiguration": {
+                "Types": [
+                  "EDGE"
+                ]
+              }
+            }
+          },
+          "ApiGatewayResourceEvents": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "events",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceInstall": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "install",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodEventsPost": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "POST",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceEvents"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "EventsLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            }
+          },
+          "ApiGatewayMethodInstallGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceInstall"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "InstallLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            }
+          },
+          "ApiGatewayDeployment1520041159649": {
+            "Type": "AWS::ApiGateway::Deployment",
+            "Properties": {
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "StageName": "dev"
+            },
+            "DependsOn": [
+              "ApiGatewayMethodEventsPost",
+              "ApiGatewayMethodInstallGet"
+            ]
+          },
+          "EventsLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "EventsLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "InstallLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "InstallLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "TeamsDynamoDbTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+              "TableName": "forex-jlgarcia-dev-teams",
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "team_id",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "team_id",
+                  "KeyType": "HASH"
+                }
+              ],
+              "ProvisionedThroughput": {
+                "ReadCapacityUnits": 5,
+                "WriteCapacityUnits": 5
+              }
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            }
+          },
+          "ActionsLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "ActionsLambdaVersionbDl3Rca3ttFBiCeX5R5F5AIzc4fYofkRXQ73bITEQs"
+            }
+          },
+          "EventsLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "EventsLambdaVersionOcg0oFiz8Y2XnMItrnGxKq0YjBQXp56MLfjDONpM"
+            }
+          },
+          "InstallLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "InstallLambdaVersionwMIW0BPofVnyjAeNKW60u8TdGWNJiCPR8v0tTfgnHc"
+            }
+          },
+          "ServiceEndpoint": {
+            "Description": "URL of the service endpoint",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  "https://",
+                  {
+                    "Ref": "ApiGatewayRestApi"
+                  },
+                  ".execute-api.ap-southeast-1.amazonaws.com/dev"
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "coreCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "AccelerateConfiguration": {
+                "AccelerationStatus": "Suspended"
+              }
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            }
+          }
+        }
+      },
+      "vpc": {}
+    },
+    "custom": {
+      "namespace": "forex-jlgarcia-dev",
+      "stage": "dev"
+    },
+    "functions": {
+      "actions": {
+        "handler": "actions.handler",
+        "events": [],
+        "name": "forex-jlgarcia-dev-actions",
+        "package": {},
+        "vpc": {}
+      },
+      "events": {
+        "handler": "events.handler",
+        "events": [
+          {
+            "http": {
+              "path": "events",
+              "method": "post",
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "forex-jlgarcia-dev-events",
+        "package": {},
+        "vpc": {}
+      },
+      "install": {
+        "handler": "install.handler",
+        "events": [
+          {
+            "http": {
+              "path": "install",
+              "method": "get",
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "forex-jlgarcia-dev-install",
+        "package": {},
+        "vpc": {}
+      }
+    },
+    "resources": {
+      "Resources": {
+        "TeamsDynamoDbTable": {
+          "Type": "AWS::DynamoDB::Table",
+          "Properties": {
+            "TableName": "forex-jlgarcia-dev-teams",
+            "AttributeDefinitions": [
+              {
+                "AttributeName": "team_id",
+                "AttributeType": "S"
+              }
+            ],
+            "KeySchema": [
+              {
+                "AttributeName": "team_id",
+                "KeyType": "HASH"
+              }
+            ],
+            "ProvisionedThroughput": {
+              "ReadCapacityUnits": 5,
+              "WriteCapacityUnits": 5
+            }
+          }
+        }
+      },
+      "Outputs": {}
+    },
+    "artifact": "C:\\Users\\Ryan Garcia\\forex-jlgarcia\\.serverless\\forex-jlgarcia.zip"
+  },
+  "package": {
+    "artifactDirectoryName": "serverless/forex-jlgarcia/dev/1520041159633-2018-03-03T01:39:19.633Z",
+    "artifact": "forex-jlgarcia.zip"
+  }
+}
